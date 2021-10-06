@@ -20,8 +20,9 @@ namespace RokuAPIGateway
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    
                     webBuilder.ConfigureAppConfiguration(config => config.AddJsonFile("ocelot.json"));
+                    webBuilder.UseStartup<Startup>();
                 });
     }
 }

@@ -23,6 +23,8 @@ using System.Net.Http;
 using System.Net;
 using System.IO;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
+using Ocelot.Configuration.File;
 
 namespace RokuAPIGateway
 {
@@ -30,9 +32,14 @@ namespace RokuAPIGateway
     {
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        private readonly IConfiguration _cfg;
+
+        public Startup(IConfiguration configuration) => _cfg = configuration;
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOcelot();
+            services.ConfigureOcelotJson(_cfg);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,10 +62,12 @@ namespace RokuAPIGateway
                     }
 
                     HttpClient client = new HttpClient();
+
+                    //client.BaseAddres = new Uri($"https://{Environment.GetEnvironmentVariablie("ROKU_AUTH_IP")}")
                     client.BaseAddress = new Uri("http://localhost:7000/");
                     client.DefaultRequestHeaders.Add("X-JWT-Token", (string)ctx.Request.Headers["X-JWT-Token"]);
 
-                    HttpResponseMessage responseMessage = await client.GetAsync("25a57dae7cca4fcfb52327966462310e/user/verify");
+                    HttpResponseMessage responseMessage = await client.GetAsync($"{Environment.GetEnvironmentVariable("ROKU_AUTH_API_KEY")}/user/verify");
                     if(responseMessage == null)
                     {                       
                         ctx.Items.SetError(new UnauthorizedError("Response null", OcelotErrorCode.UnauthenticatedError, 401));
@@ -104,7 +113,15 @@ namespace RokuAPIGateway
                 }
             };
 
-            app.UseOcelot(config).Wait();
+            /*
+            app.UseOcelot((ocelotBuilder, ocelotConfig) =>
+            {
+                ocelotBuilder.UseMiddleware<JWTMiddleware>();
+            }).Wait();
+            */
+
+            app.UseOcelot(config)
+                .Wait();
 
         }
     }

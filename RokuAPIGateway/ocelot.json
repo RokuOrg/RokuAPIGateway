@@ -1,8 +1,7 @@
-
 {
   "Routes": [
-    {
-      "DownstreamPathTemplate": "/25a57dae7cca4fcfb52327966462310e/user",
+    { //All Only FOR DEVELOPMENT
+      "DownstreamPathTemplate": "/[ROKU_AUTH_API_KEY]/user",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -12,6 +11,106 @@
       ],
       "UpstreamPathTemplate": "/auth/user",
       "UpstreamHttpMethod": [ "Get" ]
+    },
+    { //Register
+      "DownstreamPathTemplate": "/[ROKU_AUTH_API_KEY]/user/register",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7000
+        }
+      ],
+      "UpstreamPathTemplate": "/auth/user/register",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    { //Login
+      "DownstreamPathTemplate": "/[ROKU_AUTH_API_KEY]/user/login",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7000
+        }
+      ],
+      "UpstreamPathTemplate": "/auth/user/login",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    { //Verify
+      "DownstreamPathTemplate": "/[ROKU_AUTH_API_KEY]/user/verify",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7000
+        }
+      ],
+      "UpstreamPathTemplate": "/auth/user/verify",
+      "UpstreamHttpMethod": [ "Get" ]
+    }, //PROJECT API
+    { //Get Project
+      "DownstreamPathTemplate": "/project",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7001
+        }
+      ],
+      "UpstreamPathTemplate": "/project",
+      "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ]
+
+    },
+    { //get Project byId
+      "DownstreamPathTemplate": "/project/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7001
+        }
+      ],
+      "UpstreamPathTemplate": "/project/{id}",
+      "UpstreamHttpMethod": [ "Get" ]
+
+    },
+    { //Project user
+      "DownstreamPathTemplate": "/project/user/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7001
+        }
+      ],
+      "UpstreamPathTemplate": "/project/user",
+      "UpstreamHttpMethod": [ "Post", "Delete" ]
+    },
+    { //Project Item
+      "DownstreamPathTemplate": "/project/item",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7001
+        }
+      ],
+      "UpstreamPathTemplate": "/project/item",
+      "UpstreamHttpMethod": [ "Delete", "Post", "Get", "Put" ]
+
+    },
+    { //put Project list
+      "DownstreamPathTemplate": "/project/list",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7001
+        }
+      ],
+      "UpstreamPathTemplate": "/project/list",
+      "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ]
+
     }
   ],
 

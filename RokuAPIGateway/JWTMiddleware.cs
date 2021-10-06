@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using Ocelot.Errors;
 using Ocelot.Logging;
 using Ocelot.Middleware;
 using Ocelot.Responder;
@@ -33,19 +34,22 @@ namespace RokuAPIGateway
                 await _next.Invoke(httpContext);
                 return;
             }
-            
+
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("http://157.90.164.50/");
+            client.BaseAddress = new Uri("http://localhost:7000/");
             client.DefaultRequestHeaders.Add("X-JWT-Token", (string)httpContext.Request.Headers["X-JWT-Token"]);
-            
-            HttpResponseMessage responseMessage = await client.GetAsync("/api/user/validate");
+
+            HttpResponseMessage responseMessage = await client.GetAsync("25a57dae7cca4fcfb52327966462310e/user/verify");
+            if (responseMessage == null)
+            {
+                httpContext.Items.SetError(new UnauthorizedError("Response null", OcelotErrorCode.UnauthenticatedError, 401));
+                return;
+            }
+
             if (!responseMessage.IsSuccessStatusCode)
             {
-                await ReturnStatus(httpContext, HttpStatusCode.Unauthorized, "Invalid JWT token");
+                httpContext.Items.SetError(new UnauthorizedError($"Response failed: {responseMessage.StatusCode}", OcelotErrorCode.UnauthenticatedError, 401));
 
-                DownstreamResponse downstreamResponse = new DownstreamResponse(new HttpResponseMessage(HttpStatusCode.Unauthorized));
-
-                await _httpResponder.SetResponseOnHttpContext(httpContext, downstreamResponse);
                 return;
             }
 
@@ -60,20 +64,23 @@ namespace RokuAPIGateway
 
             try
             {
-                 message = serializer.Deserialize<Message>(jsonReader);
+                message = serializer.Deserialize<Message>(jsonReader);
             }
             catch (JsonReaderException)
             {
                 Console.WriteLine("Invalid JSON.");
             }
+
             if (!message.Succes)
             {
-                await ReturnStatus(httpContext, HttpStatusCode.Unauthorized, "Invalid JWT token");
+
+                httpContext.Items.SetError(new UnauthorizedError("Response false", OcelotErrorCode.UnauthenticatedError, 200));
+
                 return;
             }
 
-            httpContext.Request.Headers.Add("X-User-Validated", (string)message.Object.Username);
-            
+            httpContext.Items.DownstreamRequest().Headers.Add("X-User-Validated", (string)message.Object.UserId);
+
             await _next.Invoke(httpContext);
         }
 
