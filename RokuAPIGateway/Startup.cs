@@ -45,9 +45,6 @@ namespace RokuAPIGateway
 
             app.UseRouting();
 
-            //If JWT TOKen valid response fails
-            //If jWT Token not valid response no succes
-            //If no JWT Token Go to downstream 
             var config = new OcelotPipelineConfiguration {
                 AuthenticationMiddleware = async (ctx, next) =>
                 {
@@ -71,7 +68,7 @@ namespace RokuAPIGateway
                     if (!responseMessage.IsSuccessStatusCode)
                     {
                         ctx.Items.SetError(new UnauthorizedError($"Response failed: {responseMessage.StatusCode}", OcelotErrorCode.UnauthenticatedError, 401));
-
+                        
                         return;
                     }
 
@@ -100,10 +97,9 @@ namespace RokuAPIGateway
                         
                         return;
                     }
-                    //(string)message.Object.UserId
-                    ctx.Request.Headers.Add("X-User-Validated", "gaming");
-                    ctx.Response.Headers.Add("X-User-Validated", "haming");
-                    
+
+                    ctx.Items.DownstreamRequest().Headers.Add("X-User-Validated", (string)message.Object.UserId);
+
                     await next.Invoke();
                 }
             };
