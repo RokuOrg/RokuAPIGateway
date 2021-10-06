@@ -1,12 +1,13 @@
+
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/user",
+      "DownstreamPathTemplate": "/25a57dae7cca4fcfb52327966462310e/user",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "157.90.164.50",
-          "Port": 80
+          "Host": "localhost",
+          "Port": 7000
         }
       ],
       "UpstreamPathTemplate": "/auth/user",
@@ -14,8 +15,8 @@
     }
   ],
 
-  "GlovalConfiguration": {
-    "BaseUrl": "https://localhost:5001",
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:7003",
     "RateLimitOptions": {
       "EnableRateLimiting": true,
       "Period": "10s",
