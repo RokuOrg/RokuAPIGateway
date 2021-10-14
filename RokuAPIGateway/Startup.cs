@@ -60,6 +60,12 @@ namespace RokuAPIGateway
                         await next.Invoke();
                         return;
                     }
+                    
+                    if (ctx.Request.Headers.ContainsKey("X-User-Validated"))
+                    {
+                        ctx.Items.SetError(new UnauthorizedError("Request contains banned headers", OcelotErrorCode.UnauthenticatedError, 401));
+                        return;
+                    }
 
                     HttpClient client = new HttpClient();
 
